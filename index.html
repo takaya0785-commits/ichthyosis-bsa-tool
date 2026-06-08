@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>魚鱗癬重症度スコア・BSA色塗りツール</title>
+<style>
+:root{
+  --bg:#f5f7fb;--card:#fff;--ink:#0f172a;--muted:#64748b;--line:#dbe3ef;--blue:#2563eb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;color:var(--ink)}
+.wrap{max-width:1240px;margin:auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 10px rgba(15,23,42,.06);margin-bottom:14px}
+.header{padding:18px 20px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+h1{font-size:25px;margin:0 0 8px}
+h2{font-size:18px;color:#0b3b8f;margin:0 0 12px}
+p{margin:4px 0;color:#334155}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{border:1px solid #cbd5e1;background:#fff;border-radius:8px;padding:9px 14px;font-size:15px;cursor:pointer}
+button.primary{background:#16a34a;color:#fff;border-color:#16a34a}
+button.blue{background:#2563eb;color:#fff;border-color:#2563eb}
+button.danger{color:#b91c1c}
+button.active{outline:3px solid #93c5fd}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.tab{padding:14px;text-align:center;font-weight:700;color:#64748b}
+.tab.active{color:#0b5eea;border-bottom:3px solid #2563eb}
+.canvasArea{padding:18px;display:grid;grid-template-columns:1fr 300px 1fr;gap:16px;align-items:start}
+@media(max-width:980px){.canvasArea{grid-template-columns:1fr}.toolbox{order:-1}}
+.bodyBox{text-align:center;position:relative}
+canvas{width:100%;max-width:380px;height:auto;background:white;touch-action:none;border-radius:8px}
+.toolbox{border:1px solid var(--line);border-radius:10px;padding:16px;background:#fff;align-self:center}
+.palette{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.sw{width:28px;height:28px;border:1px solid #94a3b8;border-radius:5px;cursor:pointer}
+.sw.active{outline:3px solid #2563eb}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:9px;font-size:15px;background:#fff}
+label{display:block;font-weight:700;margin:8px 0 4px}
+.rangeRow{display:flex;gap:8px;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.pad{padding:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:center}
+th:first-child,td:first-child{text-align:left}
+.total{font-size:34px;color:#1d4ed8;font-weight:800;text-align:right}
+.scoreBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.scoreBtns button.selected{background:#2563eb;color:#fff}
+.note{font-size:12px;color:#64748b}
+.legend{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 22px 16px}
+@media(max-width:900px){.legend{grid-template-columns:repeat(2,1fr)}}
+.leg{font-size:13px;display:flex;gap:6px;align-items:center}
+.box{width:18px;height:18px;border:1px solid #94a3b8;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="card">
+  <div class="header">
+    <div>
+      <h1>魚鱗癬重症度スコア・BSA色塗りツール</h1>
+      <p>部位ごとに病変範囲を塗ると、体表面積（%BSA）を自動計算します。</p>
+      <p class="note">手掌・手背は、片腕の前面・後面に含めて計算します。</p>
+    </div>
+    <div class="btns">
+      <button onclick="undo()">↶ 元に戻す</button>
+      <button onclick="redo()">↷ やり直す</button>
+      <button class="danger" onclick="resetAll()">リセット</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">前面（体の表側）</div>
+    <div class="tab">後面（体の裏側）</div>
+  </div>
+
+  <div class="canvasArea">
+    <div class="bodyBox">
+      <canvas id="front" width="430" height="700"></canvas>
+      <b>前面</b>
+    </div>
+
+    <div class="toolbox">
+      <h2>塗り方</h2>
+      <label>色を選択</label>
+      <div class="palette">
+        <div class="sw active" style="background:#dc2626" onclick="setPaintColor('#dc2626',this)"></div>
+        <div class="sw" style="background:#fca5a5" onclick="setPaintColor('#fca5a5',this)"></div>
+        <div class="sw" style="background:#fdba74" onclick="setPaintColor('#fdba74',this)"></div>
+        <div class="sw" style="background:#fde68a" onclick="setPaintColor('#fde68a',this)"></div>
+        <div class="sw" style="background:#86efac" onclick="setPaintColor('#86efac',this)"></div>
+        <div class="sw" style="background:#93c5fd" onclick="setPaintColor('#93c5fd',this)"></div>
+      </div>
+      <label>ブラシサイズ</label>
+      <div class="rangeRow"><input id="brush" type="range" min="4" max="36" value="18"><span id="brushVal">18px</span></div>
+      <div class="btns">
+        <button id="paintBtn" class="active" onclick="mode='paint';markMode()">塗る</button>
+        <button id="eraseBtn" onclick="mode='erase';markMode()">消す</button>
+      </div>
+      <label>部位を一括塗りつぶし</label>
+      <select id="fillSelect"></select>
+      <button onclick="fillRegion()">選択部位を塗りつぶす</button>
+      <p class="note">人体範囲外は塗れません。各部位の面積重みでBSAを計算します。</p>
+    </div>
+
+    <div class="bodyBox">
+      <canvas id="back" width="430" height="700"></canvas>
+      <b>後面</b>
+    </div>
+  </div>
+  <div class="legend" id="legend"></div>
+</section>
+
+<div class="grid2">
+<section class="card pad">
+  <h2>BSA計測結果</h2>
+  <table id="resultTable"></table>
+  <div style="display:flex;justify-content:space-between;align-items:end;margin-top:12px">
+    <h2>総BSA（合計）</h2><div class="total" id="totalBsa">0.00 %</div>
+  </div>
+</section>
+
+<section class="card pad">
+  <h2>皮膚所見スコア入力（0〜3点）</h2>
+  <div id="scores"></div>
+  <label>患者ID</label><input id="patientId" placeholder="例：ICH-001">
+  <label>評価日</label><input id="date" type="date">
+  <label>メモ</label><textarea id="memo" rows="3" placeholder="ここにメモを入力できます"></textarea>
+  <h2 style="margin-top:16px">データ出力・送信</h2>
+  <div class="btns">
+    <button class="primary" onclick="downloadCSV()">CSVダウンロード</button>
+    <button onclick="downloadJSON()">JSONダウンロード</button>
+    <button class="blue" onclick="sendGoogle()">Googleスプレッドシートに送信</button>
+  </div>
+  <p class="note">Google送信には、HTML内の GOOGLE_SCRIPT_URL 設定が必要です。</p>
+</section>
+</div>
+<p class="note">※研究・調査・教育目的の試作版です。診断目的では使用しないでください。</p>
+</div>
+
+<script>
+const GOOGLE_SCRIPT_URL = "";
+
+const regions = [
+ {id:'front_head', side:'front', name:'顔前面', weight:4.5, fill:'#e9d5ff'},
+ {id:'front_trunk', side:'front', name:'体前面', weight:18, fill:'#fef3c7'},
+ {id:'front_r_arm', side:'front', name:'右腕前面', weight:4.5, fill:'#dcfce7'},
+ {id:'front_l_arm', side:'front', name:'左腕前面', weight:4.5, fill:'#dff3ff'},
+ {id:'genital', side:'front', name:'陰部', weight:1, fill:'#ffe4e6'},
+ {id:'front_r_leg', side:'front', name:'右下肢前面', weight:9, fill:'#fed7aa'},
+ {id:'front_l_leg', side:'front', name:'左下肢前面', weight:9, fill:'#fecaca'},
+ {id:'back_head', side:'back', name:'後頭部', weight:4.5, fill:'#e9d5ff'},
+ {id:'back_trunk', side:'back', name:'体後面', weight:18, fill:'#fef3c7'},
+ {id:'back_r_arm', side:'back', name:'右腕後面', weight:4.5, fill:'#dcfce7'},
+ {id:'back_l_arm', side:'back', name:'左腕後面', weight:4.5, fill:'#dff3ff'},
+ {id:'back_r_leg', side:'back', name:'右下肢後面', weight:9, fill:'#fed7aa'},
+ {id:'back_l_leg', side:'back', name:'左下肢後面', weight:9, fill:'#fecaca'}
+];
+
+let paintColor="#dc2626", mode="paint", history=[], future=[];
+const canvases={}, ctxs={}, maskCanvas={}, lesionCanvas={};
+
+document.getElementById("date").valueAsDate = new Date();
+document.getElementById("brush").oninput=e=>document.getElementById("brushVal").textContent=e.target.value+"px";
+
+function setup(){
+ ['front','back'].forEach(side=>{
+   canvases[side]=document.getElementById(side);
+   ctxs[side]=canvases[side].getContext('2d');
+   maskCanvas[side]=document.createElement('canvas'); maskCanvas[side].width=430; maskCanvas[side].height=700;
+   lesionCanvas[side]=document.createElement('canvas'); lesionCanvas[side].width=430; lesionCanvas[side].height=700;
+   addPointer(side);
+ });
+ drawAll();
+ makeLegend();
+ makeFillOptions();
+ makeScores();
+ calculate();
+ saveHistory();
+}
+function pathRegion(ctx,id){
+ const p=(fn)=>fn(ctx);
+ ctx.beginPath();
+ switch(id){
+  case 'front_head': case 'back_head': ctx.ellipse(215,83,42,50,0,0,Math.PI*2); break;
+  case 'front_trunk': ctx.moveTo(150,145);ctx.lineTo(280,145);ctx.quadraticCurveTo(265,300,280,390);ctx.quadraticCurveTo(215,425,150,390);ctx.quadraticCurveTo(165,300,150,145);break;
+  case 'back_trunk': ctx.moveTo(150,145);ctx.lineTo(280,145);ctx.quadraticCurveTo(270,315,280,390);ctx.quadraticCurveTo(215,410,150,390);ctx.quadraticCurveTo(160,315,150,145);break;
+  case 'front_r_arm': case 'back_r_arm': ctx.moveTo(150,150);ctx.quadraticCurveTo(95,180,90,310);ctx.quadraticCurveTo(70,380,93,430);ctx.quadraticCurveTo(120,390,125,315);ctx.quadraticCurveTo(135,220,160,160);ctx.closePath();break;
+  case 'front_l_arm': case 'back_l_arm': ctx.moveTo(280,150);ctx.quadraticCurveTo(335,180,340,310);ctx.quadraticCurveTo(360,380,337,430);ctx.quadraticCurveTo(310,390,305,315);ctx.quadraticCurveTo(295,220,270,160);ctx.closePath();break;
+  case 'genital': ctx.ellipse(215,390,31,34,0,0,Math.PI*2); break;
+  case 'front_r_leg': case 'back_r_leg': ctx.moveTo(150,390);ctx.quadraticCurveTo(135,500,145,625);ctx.quadraticCurveTo(165,650,195,625);ctx.quadraticCurveTo(195,505,215,412);ctx.quadraticCurveTo(180,405,150,390);break;
+  case 'front_l_leg': case 'back_l_leg': ctx.moveTo(280,390);ctx.quadraticCurveTo(295,500,285,625);ctx.quadraticCurveTo(265,650,235,625);ctx.quadraticCurveTo(235,505,215,412);ctx.quadraticCurveTo(250,405,280,390);break;
+ }
+}
+function drawBase(side){
+ const ctx=ctxs[side];
+ ctx.clearRect(0,0,430,700);
+ ctx.fillStyle="#fff";ctx.fillRect(0,0,430,700);
+ regions.filter(r=>r.side===side).forEach(r=>{
+   pathRegion(ctx,r.id);ctx.fillStyle=r.fill;ctx.fill();
+   ctx.strokeStyle="#334155";ctx.setLineDash([4,3]);ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
+ });
+ drawOutline(ctx,side);
+ regions.filter(r=>r.side===side).forEach(r=>{
+   ctx.fillStyle="#111";ctx.font="15px sans-serif";ctx.textAlign="center";
+   const [x,y]=labelPos(r.id); ctx.fillText(r.name,x,y); ctx.fillText(r.weight+"%",x,y+20);
+ });
+}
+function drawOutline(ctx,side){
+ ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.setLineDash([]);
+ ctx.beginPath();
+ ctx.ellipse(215,83,42,50,0,0,Math.PI*2);
+ ctx.moveTo(150,145); ctx.quadraticCurveTo(125,155,105,205); ctx.quadraticCurveTo(90,250,90,310);
+ ctx.quadraticCurveTo(70,380,93,430); ctx.quadraticCurveTo(120,390,125,315);
+ ctx.moveTo(280,145); ctx.quadraticCurveTo(305,155,325,205); ctx.quadraticCurveTo(340,250,340,310);
+ ctx.quadraticCurveTo(360,380,337,430); ctx.quadraticCurveTo(310,390,305,315);
+ ctx.moveTo(150,145);ctx.lineTo(280,145);
+ ctx.moveTo(150,145);ctx.quadraticCurveTo(160,315,150,390);
+ ctx.quadraticCurveTo(175,410,215,412);ctx.quadraticCurveTo(255,410,280,390);
+ ctx.quadraticCurveTo(270,315,280,145);
+ ctx.moveTo(150,390);ctx.quadraticCurveTo(135,500,145,625);ctx.quadraticCurveTo(165,650,195,625);ctx.quadraticCurveTo(198,510,215,412);
+ ctx.moveTo(280,390);ctx.quadraticCurveTo(295,500,285,625);ctx.quadraticCurveTo(265,650,235,625);ctx.quadraticCurveTo(232,510,215,412);
+ ctx.stroke();
+ if(side==='front'){
+   ctx.beginPath(); ctx.arc(200,85,2,0,Math.PI*2);ctx.arc(230,85,2,0,Math.PI*2);ctx.stroke();
+   ctx.beginPath();ctx.arc(215,402,31,0,Math.PI*2);ctx.stroke();
+ }else{
+   ctx.beginPath();ctx.moveTo(215,392);ctx.lineTo(215,430);ctx.stroke();
+ }
+}
+function labelPos(id){
+ return {
+  front_head:[215,72], front_trunk:[215,255], front_r_arm:[110,315], front_l_arm:[320,315], genital:[215,385],
+  front_r_leg:[170,500], front_l_leg:[260,500], back_head:[215,72], back_trunk:[215,255],
+  back_r_arm:[110,315], back_l_arm:[320,315], back_r_leg:[170,500], back_l_leg:[260,500]
+ }[id];
+}
+function makeMask(side){
+ const m=maskCanvas[side].getContext('2d');m.clearRect(0,0,430,700);m.fillStyle="#000";
+ regions.filter(r=>r.side===side).forEach(r=>{pathRegion(m,r.id);m.fill();});
+}
+function drawAll(){
+ ['front','back'].forEach(side=>{
+   makeMask(side); drawBase(side); ctxs[side].drawImage(lesionCanvas[side],0,0); drawOutline(ctxs[side],side);
+ });
+}
+function setPaintColor(c,el){paintColor=c;document.querySelectorAll('.sw').forEach(s=>s.classList.remove('active'));el.classList.add('active')}
+function markMode(){document.getElementById('paintBtn').classList.toggle('active',mode==='paint');document.getElementById('eraseBtn').classList.toggle('active',mode==='erase')}
+function addPointer(side){
+ const c=canvases[side]; let down=false;
+ c.addEventListener('pointerdown',e=>{down=true;c.setPointerCapture(e.pointerId);saveHistory();paint(e,side)});
+ c.addEventListener('pointermove',e=>{if(down)paint(e,side)});
+ c.addEventListener('pointerup',()=>{down=false;calculate()});
+ c.addEventListener('pointercancel',()=>down=false);
+}
+function paint(e,side){
+ e.preventDefault();
+ const c=canvases[side], r=c.getBoundingClientRect();
+ const x=(e.clientX-r.left)*430/r.width, y=(e.clientY-r.top)*700/r.height;
+ const brush=Number(document.getElementById('brush').value);
+ const lctx=lesionCanvas[side].getContext('2d');
+ lctx.save();
+ if(mode==='erase'){lctx.globalCompositeOperation='destination-out';lctx.fillStyle='rgba(0,0,0,1)';}
+ else{lctx.globalCompositeOperation='source-over';lctx.fillStyle=paintColor;}
+ lctx.beginPath();lctx.arc(x,y,brush,0,Math.PI*2);lctx.fill();lctx.restore();
+ constrain(side); drawAll(); calculate();
+}
+function constrain(side){
+ const lctx=lesionCanvas[side].getContext('2d'), mctx=maskCanvas[side].getContext('2d');
+ const img=lctx.getImageData(0,0,430,700), mask=mctx.getImageData(0,0,430,700);
+ for(let i=0;i<img.data.length;i+=4){ if(mask.data[i+3]===0) img.data[i+3]=0; }
+ lctx.putImageData(img,0,0);
+}
+function regionStats(r){
+ const side=r.side, l=lesionCanvas[side].getContext('2d').getImageData(0,0,430,700).data;
+ const off=document.createElement('canvas');off.width=430;off.height=700;const o=off.getContext('2d');
+ o.fillStyle="#000";pathRegion(o,r.id);o.fill();
+ const md=o.getImageData(0,0,430,700).data;
+ let area=0, painted=0;
+ for(let i=0;i<md.length;i+=4){ if(md[i+3]>0){area++; if(l[i+3]>0) painted++;}}
+ const rate=area?painted/area:0;
+ return {rate,bsa:rate*r.weight};
+}
+function calculate(){
+ let html='<tr><th>部位</th><th>塗布率</th><th>BSA（%）</th></tr>', total=0, front=0, back=0;
+ regions.forEach(r=>{
+   const s=regionStats(r); total+=s.bsa; if(r.side==='front')front+=s.bsa; else back+=s.bsa;
+   html+=`<tr><td><span class="box" style="background:${r.fill}"></span> ${r.name}（${r.weight}%）</td><td>${(s.rate*100).toFixed(1)}%</td><td>${s.bsa.toFixed(2)}%</td></tr>`;
+   if(r.id==='front_l_leg') html+=`<tr><td colspan="2"><b>前面 合計</b></td><td><b>${front.toFixed(2)}%</b></td></tr>`;
+ });
+ html+=`<tr><td colspan="2"><b>後面 合計</b></td><td><b>${back.toFixed(2)}%</b></td></tr>`;
+ document.getElementById('resultTable').innerHTML=html;
+ document.getElementById('totalBsa').textContent=total.toFixed(2)+' %';
+ updateScoreTotal();
+ return {total,front,back};
+}
+function makeLegend(){
+ document.getElementById('legend').innerHTML=regions.map(r=>`<div class="leg"><span class="box" style="background:${r.fill}"></span>${r.name} ${r.weight}%</div>`).join('');
+}
+function makeFillOptions(){
+ document.getElementById('fillSelect').innerHTML=regions.map(r=>`<option value="${r.id}">${r.name} ${r.weight}%</option>`).join('');
+}
+function fillRegion(){
+ saveHistory();
+ const id=document.getElementById('fillSelect').value, r=regions.find(x=>x.id===id);
+ const lctx=lesionCanvas[r.side].getContext('2d');lctx.fillStyle=paintColor;pathRegion(lctx,id);lctx.fill();
+ constrain(r.side);drawAll();calculate();
+}
+const scoreItems=[['scale','鱗屑（りんせつ）'],['ery','紅斑（こうはん）'],['fissure','亀裂（きれつ）']];
+function makeScores(){
+ document.getElementById('scores').innerHTML=scoreItems.map(([id,label])=>`
+ <div style="margin:12px 0"><b>${label}</b>
+ <div class="scoreBtns">${[0,1,2,3].map(n=>`<button data-score="${id}" data-val="${n}" onclick="setScore('${id}',${n},this)">${n}</button>`).join('')}</div></div>`).join('')+
+ `<div style="margin-top:12px"><b>合計スコア（最大9点）</b><div class="total" style="font-size:22px" id="scoreTotal">0 / 9</div></div>`;
+}
+const scores={scale:0,ery:0,fissure:0};
+function setScore(id,n,el){scores[id]=n;document.querySelectorAll(`[data-score="${id}"]`).forEach(b=>b.classList.remove('selected'));el.classList.add('selected');updateScoreTotal()}
+function updateScoreTotal(){const t=scores.scale+scores.ery+scores.fissure;const e=document.getElementById('scoreTotal'); if(e)e.textContent=t+' / 9'}
+function snapshot(){return ['front','back'].map(side=>lesionCanvas[side].toDataURL())}
+function restore(snap){['front','back'].forEach((side,i)=>{const img=new Image();img.onload=()=>{const l=lesionCanvas[side].getContext('2d');l.clearRect(0,0,430,700);l.drawImage(img,0,0);drawAll();calculate()};img.src=snap[i];})}
+function saveHistory(){history.push(snapshot()); if(history.length>40)history.shift(); future=[]}
+function undo(){if(history.length<2)return;future.push(history.pop());restore(history[history.length-1])}
+function redo(){if(!future.length)return;const s=future.pop();history.push(s);restore(s)}
+function resetAll(){saveHistory();['front','back'].forEach(side=>lesionCanvas[side].getContext('2d').clearRect(0,0,430,700));drawAll();calculate()}
+function record(){
+ const c=calculate(); const rows=regions.map(r=>{const s=regionStats(r);return {region:r.name,weight:r.weight,painted_rate:(s.rate*100).toFixed(1),bsa:s.bsa.toFixed(2)}});
+ return {timestamp:new Date().toISOString(),patient_id:document.getElementById('patientId').value,date:document.getElementById('date').value,
+ total_bsa:c.total.toFixed(2),front_bsa:c.front.toFixed(2),back_bsa:c.back.toFixed(2),scale_score:scores.scale,erythema_score:scores.ery,fissure_score:scores.fissure,total_score:scores.scale+scores.ery+scores.fissure,memo:document.getElementById('memo').value,regions:rows};
+}
+function downloadCSV(){
+ const r=record();
+ let keys=['timestamp','patient_id','date','total_bsa','front_bsa','back_bsa','scale_score','erythema_score','fissure_score','total_score','memo'];
+ let csv=keys.join(',')+'\n'+keys.map(k=>`"${String(r[k]??'').replaceAll('"','""')}"`).join(',')+'\n\nregion,weight,painted_rate,bsa\n';
+ r.regions.forEach(x=>csv+=`${x.region},${x.weight},${x.painted_rate},${x.bsa}\n`);
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}), a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download=`bsa_${r.patient_id||'patient'}_${r.date||'date'}.csv`;a.click();
+}
+function downloadJSON(){const blob=new Blob([JSON.stringify(record(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bsa_record.json';a.click()}
+async function sendGoogle(){
+ if(!GOOGLE_SCRIPT_URL){alert('GOOGLE_SCRIPT_URLが未設定です。CSVダウンロードを使用してください。');return;}
+ await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(record())});
+ alert('送信しました。');
+}
+setup();
+</script>
+</body>
+</html>
