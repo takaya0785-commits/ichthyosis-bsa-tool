@@ -1,11 +1,221 @@
+ChatGPT
+
+
+
+
+
+この図を用いてつくって
+
+
+医療ワークシートの図解
+
+生成された画像：医療ワークシートの図解
+
+
+編集
+
+
+惜しいところまでいっています。ヒト型のBSAの範囲に関して、図のように範囲を指定して、再度出力して。顔前面4.5%、体前面18％、右腕前面4.5%、左腕前面4.5%、右下肢前面9%、左下肢前面9%、後頭部4.5%、体後面18%、右腕後面4.5%、左腕後面4.5%、右下肢後面9%、左下肢後面9%、陰部１％
+
+生成された画像：魚鱗癬BSA計測ツールのUI
+
+
+編集
+
+
+これを使ってBSA色塗りツール再構成して。また手の範囲は手掌・手背それぞれを片腕前・後面にふくめて
+
+生成された画像：体表面積計測ツールのUI
+
+
+編集
+
+
+BSA評価ツールで色塗りしてもらったあと、写真のCSVダウンロードをおしてもらって、自動的にスプレッドシートに保存できるようにはできる？
+
+このグーグルスプレッドシートを有効にするにはどうしたらいい？
+
+生成された画像：魚鱗癬BSA計測ツールのダッシュボード
+
+
+編集
+
+
+思考時間: 4s
+修正版を作成しました。
+
+簡易版BSA色塗りツール v2 
+
+
+
+この簡易版BSAツールすばらしい。これは今、「前面」、「後面」としかわかれていないけど、前面→顔面、右腕前面、左腕前面、体幹前面、右下肢前面、左下肢前面、陰部。後面→高等部、右腕後面、左腕後面、体幹後部、右下肢後面、左下肢後面という風に、スコアリングできるようにしてほしい。
+
+ありがとうございます。ここまで来ると、研究でも十分使えるレベルになってきています。
+
+そして、この修正はぜひやった方がいいです。理由は、現在は
+
+前面全体
+
+後面全体
+
+しか表示していないため、
+
+例えば
+
+顔だけ100%
+
+腕だけ100%
+
+でも前面BSAしか分かりません。
+
+魚鱗癬重症度評価では各部位ごとの罹患率を見ることが多いので、部位別に表示した方が実用性が高いです。
+
+私が作るならこのようにします
+BSA計測結果
+顔前面　　　　　　　65%　　　→BSA 2.93%
+
+右腕前面　　　　　30%　　　→BSA 1.35%
+
+左腕前面　　　　　0%　　　 →BSA 0%
+
+体幹前面　　　　　50%　　　→BSA 9.00%
+
+右下肢前面　　　80%　　　→BSA 7.20%
+
+左下肢前面　　　20%　　　→BSA 1.80%
+
+陰部　　　　　　　100%　　 →BSA 1.00%
+
+-------------------------------
+
+前面合計　　　　23.28%
+後面も同様に
+
+後頭部
+
+右腕後面
+
+左腕後面
+
+体幹後面
+
+右下肢後面
+
+左下肢後面
+
+------------------
+
+後面合計
+最後に
+
+総BSA
+
+46.12%
+さらに便利な機能
+各部位に
+
+塗布率(%)
+
+BSA(%)
+の2列を作ります。
+
+例えば
+
+部位	塗布率	BSA
+顔前面	65	2.93
+右腕前面	30	1.35
+研究ではこちらの方が解析しやすいです。
+
+さらにもう一段階おすすめ
+現在は
+
+前面
+と
+
+後面
+しかありませんが、
+
+実際にはプログラム内では既に
+
+front_head
+front_trunk
+front_r_arm
+front_l_arm
+front_r_leg
+front_l_leg
+genital
+
+back_head
+back_trunk
+back_r_arm
+back_l_arm
+back_r_leg
+back_l_leg
+という13部位に分けて計算しています。
+
+つまり、BSA計算ロジックはすでに完成していて、表示していないだけです。
+
+そのため改良は比較的簡単で、
+
+計算は今のまま
+
+結果表示だけ13部位表示
+
+前面合計
+
+後面合計
+
+総BSA
+
+に変更できます。
+
+私がおすすめする最終版
+研究用としては、この仕様が最も使いやすいと思います。
+
+✅ 赤1色のみで塗る
+
+✅ 人体外は塗れない
+
+✅ Apple Pencil対応
+
+✅ 前面・後面を独立計測
+
+✅ 13部位（顔・体幹・左右腕・左右下肢・陰部・後頭部）それぞれの塗布率（%）を表示
+
+✅ 13部位それぞれのBSA寄与率（%）を表示
+
+✅ 前面合計
+
+✅ 後面合計
+
+✅ 総BSA
+
+✅ CSV出力
+
+✅ Googleスプレッドシート送信
+
+✅ GitHub Pages対応
+
+✅ iPadフルスクリーン対応
+
+この形にすれば、魚鱗癬だけでなく、アトピー性皮膚炎や乾癬など、他の疾患にもそのまま応用できる汎用的なBSA評価ツールになります。私はこれを「完成版」として仕上げることをおすすめします。
+
+
+いや、そうではなくて、前面と後面をさらに詳しくきさいしたい
+
+思考時間: 4s
+意図に合わせて、前面・後面の内訳を詳しく表示する版にしました。
+
+部位別BSA簡易ツール 
+
 <!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>BSA計測ツール 簡易版</title>
+<title>BSA計測ツール 簡易・部位別版</title>
 <style>
-:root{--bg:#f7f8fb;--card:#fff;--line:#d9e2ef;--ink:#111827;--red:#dc2626;--blue:#2563eb}
+:root{--bg:#f7f8fb;--card:#fff;--line:#d9e2ef;--ink:#111827;--red:#dc2626}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Helvetica Neue",Arial,sans-serif;color:var(--ink)}
 .wrap{max-width:1180px;margin:auto;padding:12px}
@@ -31,10 +241,14 @@ canvas{width:100%;max-width:390px;height:auto;background:white;touch-action:none
 label{display:block;font-weight:700;margin:9px 0 5px}
 input,textarea{width:100%;font-size:16px;border:1px solid #cbd5e1;border-radius:8px;padding:9px;background:white}
 .rangeRow{display:flex;gap:8px;align-items:center}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid2{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
 @media(max-width:850px){.grid2{grid-template-columns:1fr}}
 .pad{padding:18px}
 .resultRow{display:flex;justify-content:space-between;border-bottom:1px solid #e2e8f0;padding:16px 8px;font-size:19px;font-weight:700}
+.partTable{width:100%;border-collapse:collapse;margin:8px 0 18px;font-size:15px}
+.partTable th,.partTable td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:right}
+.partTable th:first-child,.partTable td:first-child{text-align:left}
+.groupTitle{font-weight:900;margin-top:14px;color:#111827}
 .total{font-size:42px;color:#dc2626;font-weight:900;text-align:right}
 .note{font-size:12px;color:#64748b}
 textarea{min-height:95px}
@@ -45,26 +259,20 @@ textarea{min-height:95px}
 <section class="card">
   <div class="header">
     <div>
-      <h1>魚鱗癬重症度スコア・BSA計測ツール（簡易版）</h1>
-      <p>前面・後面の人体図に赤色で病変範囲を塗ると、体表面積（%BSA）を自動計算します。</p>
+      <h1>魚鱗癬重症度スコア・BSA計測ツール（簡易・部位別版）</h1>
+      <p>前面・後面の人体図に赤色で病変範囲を塗ると、部位別BSAと総BSAを自動計算します。</p>
       <p class="note">手掌・手背は、片腕の前面・後面に含めて計算します。</p>
     </div>
-    <div class="btns">
-      <button class="danger" onclick="resetAll()">リセット</button>
-    </div>
+    <div class="btns"><button class="danger" onclick="resetAll()">リセット</button></div>
   </div>
 
   <div class="tabs">
-    <div class="tab front">前面（体の表側）</div>
-    <div class="tab">後面（体の裏側）</div>
+    <div class="tab front">前面：顔面・左右腕前面・体幹前面・左右下肢前面・陰部</div>
+    <div class="tab">後面：後頭部・左右腕後面・体幹後面・左右下肢後面</div>
   </div>
 
   <div class="canvasArea">
-    <div class="bodyBox">
-      <canvas id="front" width="430" height="700"></canvas>
-      <b>前面</b>
-    </div>
-
+    <div class="bodyBox"><canvas id="front" width="430" height="700"></canvas><b>前面</b></div>
     <div class="toolbox">
       <h2>塗り方</h2>
       <div class="btns">
@@ -72,25 +280,24 @@ textarea{min-height:95px}
         <button id="eraseBtn" onclick="mode='erase';markMode()">消す</button>
       </div>
       <label>ブラシサイズ</label>
-      <div class="rangeRow">
-        <input id="brush" type="range" min="4" max="40" value="18">
-        <span id="brushVal">18px</span>
-      </div>
+      <div class="rangeRow"><input id="brush" type="range" min="4" max="40" value="18"><span id="brushVal">18px</span></div>
       <p class="note">Apple Pencilまたは指で塗れます。人体範囲外は塗れません。</p>
     </div>
-
-    <div class="bodyBox">
-      <canvas id="back" width="430" height="700"></canvas>
-      <b>後面</b>
-    </div>
+    <div class="bodyBox"><canvas id="back" width="430" height="700"></canvas><b>後面</b></div>
   </div>
 </section>
 
 <div class="grid2">
 <section class="card pad">
   <h2>BSA計測結果</h2>
-  <div class="resultRow"><span>前面（体の表側）</span><span id="frontBsa">0.00 %</span></div>
-  <div class="resultRow"><span>後面（体の裏側）</span><span id="backBsa">0.00 %</span></div>
+  <div class="groupTitle">前面の内訳</div>
+  <table class="partTable" id="frontDetail"></table>
+  <div class="resultRow"><span>前面合計</span><span id="frontBsa">0.00 %</span></div>
+
+  <div class="groupTitle">後面の内訳</div>
+  <table class="partTable" id="backDetail"></table>
+  <div class="resultRow"><span>後面合計</span><span id="backBsa">0.00 %</span></div>
+
   <div style="display:flex;justify-content:space-between;align-items:end;margin-top:24px">
     <h2 style="color:#111827">総BSA（合計）</h2>
     <div class="total" id="totalBsa">0.00 %</div>
@@ -105,16 +312,10 @@ textarea{min-height:95px}
     <button class="blue" onclick="sendGoogle()">Googleスプレッドシートに送信</button>
   </div>
   <p class="note">Google送信には、HTML内の GOOGLE_SCRIPT_URL 設定が必要です。</p>
+  <label>評価日</label><input id="date" type="date">
+  <label>メモ</label><textarea id="memo" placeholder="ここにメモを入力できます"></textarea>
 </section>
 </div>
-
-<section class="card pad">
-  <label>評価日</label>
-  <input id="date" type="date">
-  <label>メモ</label>
-  <textarea id="memo" placeholder="ここにメモを入力できます"></textarea>
-</section>
-
 <p class="note">※本ツールは研究・調査・教育目的で作成されたものであり、診断を目的としたものではありません。</p>
 </div>
 
@@ -125,19 +326,19 @@ let mode="paint";
 const canvases={}, ctxs={}, maskCanvas={}, lesionCanvas={};
 
 const regions = [
- {id:'front_head', side:'front', weight:4.5},
- {id:'front_trunk', side:'front', weight:18},
- {id:'front_r_arm', side:'front', weight:4.5},
- {id:'front_l_arm', side:'front', weight:4.5},
- {id:'genital', side:'front', weight:1},
- {id:'front_r_leg', side:'front', weight:9},
- {id:'front_l_leg', side:'front', weight:9},
- {id:'back_head', side:'back', weight:4.5},
- {id:'back_trunk', side:'back', weight:18},
- {id:'back_r_arm', side:'back', weight:4.5},
- {id:'back_l_arm', side:'back', weight:4.5},
- {id:'back_r_leg', side:'back', weight:9},
- {id:'back_l_leg', side:'back', weight:9}
+ {id:'front_head', side:'front', name:'顔面', weight:4.5},
+ {id:'front_r_arm', side:'front', name:'右腕前面', weight:4.5},
+ {id:'front_l_arm', side:'front', name:'左腕前面', weight:4.5},
+ {id:'front_trunk', side:'front', name:'体幹前面', weight:18},
+ {id:'front_r_leg', side:'front', name:'右下肢前面', weight:9},
+ {id:'front_l_leg', side:'front', name:'左下肢前面', weight:9},
+ {id:'genital', side:'front', name:'陰部', weight:1},
+ {id:'back_head', side:'back', name:'後頭部', weight:4.5},
+ {id:'back_r_arm', side:'back', name:'右腕後面', weight:4.5},
+ {id:'back_l_arm', side:'back', name:'左腕後面', weight:4.5},
+ {id:'back_trunk', side:'back', name:'体幹後面', weight:18},
+ {id:'back_r_leg', side:'back', name:'右下肢後面', weight:9},
+ {id:'back_l_leg', side:'back', name:'左下肢後面', weight:9}
 ];
 
 document.getElementById("date").valueAsDate = new Date();
@@ -151,8 +352,7 @@ function setup(){
    lesionCanvas[side]=document.createElement('canvas'); lesionCanvas[side].width=430; lesionCanvas[side].height=700;
    addPointer(side);
  });
- drawAll();
- calculate();
+ drawAll(); calculate();
 }
 
 function pathRegion(ctx,id){
@@ -173,21 +373,12 @@ function drawBase(side){
  const ctx=ctxs[side];
  ctx.clearRect(0,0,430,700);
  ctx.fillStyle="#fff";ctx.fillRect(0,0,430,700);
- regions.filter(r=>r.side===side).forEach(r=>{
-   pathRegion(ctx,r.id);
-   ctx.fillStyle="#fafafa";
-   ctx.fill();
- });
+ regions.filter(r=>r.side===side).forEach(r=>{pathRegion(ctx,r.id);ctx.fillStyle="#fafafa";ctx.fill();});
  drawOutline(ctx,side);
 }
 
 function drawOutline(ctx,side){
- ctx.strokeStyle="#111827";
- ctx.lineWidth=2.2;
- ctx.lineCap="round";
- ctx.lineJoin="round";
- ctx.setLineDash([]);
-
+ ctx.strokeStyle="#111827";ctx.lineWidth=2.2;ctx.lineCap="round";ctx.lineJoin="round";ctx.setLineDash([]);
  ctx.beginPath();
  ctx.ellipse(215,83,42,50,0,0,Math.PI*2);
  ctx.moveTo(150,145); ctx.quadraticCurveTo(125,155,105,205); ctx.quadraticCurveTo(90,250,90,310);
@@ -201,45 +392,27 @@ function drawOutline(ctx,side){
  ctx.moveTo(150,390);ctx.quadraticCurveTo(135,500,145,625);ctx.quadraticCurveTo(165,650,195,625);ctx.quadraticCurveTo(198,510,215,412);
  ctx.moveTo(280,390);ctx.quadraticCurveTo(295,500,285,625);ctx.quadraticCurveTo(265,650,235,625);ctx.quadraticCurveTo(232,510,215,412);
  ctx.stroke();
-
- ctx.strokeStyle="#111827";
- ctx.lineWidth=2.2;
- ctx.beginPath();
- ctx.moveTo(155,150);ctx.quadraticCurveTo(160,300,150,390);
- ctx.moveTo(275,150);ctx.quadraticCurveTo(270,300,280,390);
- ctx.stroke();
-
+ ctx.beginPath();ctx.moveTo(155,150);ctx.quadraticCurveTo(160,300,150,390);ctx.moveTo(275,150);ctx.quadraticCurveTo(270,300,280,390);ctx.stroke();
  if(side==='front'){
-   ctx.lineWidth=1.7;
-   ctx.beginPath(); ctx.arc(200,85,2,0,Math.PI*2);ctx.arc(230,85,2,0,Math.PI*2);ctx.stroke();
+   ctx.lineWidth=1.7;ctx.beginPath(); ctx.arc(200,85,2,0,Math.PI*2);ctx.arc(230,85,2,0,Math.PI*2);ctx.stroke();
    ctx.beginPath();ctx.arc(215,402,31,0,Math.PI*2);ctx.stroke();
  }else{
-   ctx.lineWidth=1.7;
-   ctx.beginPath();ctx.moveTo(215,392);ctx.lineTo(215,430);ctx.stroke();
+   ctx.lineWidth=1.7;ctx.beginPath();ctx.moveTo(215,392);ctx.lineTo(215,430);ctx.stroke();
  }
 }
 
 function makeMask(side){
  const m=maskCanvas[side].getContext('2d');
- m.clearRect(0,0,430,700);
- m.fillStyle="#000";
+ m.clearRect(0,0,430,700); m.fillStyle="#000";
  regions.filter(r=>r.side===side).forEach(r=>{pathRegion(m,r.id);m.fill();});
 }
-
 function drawAll(){
- ['front','back'].forEach(side=>{
-   makeMask(side);
-   drawBase(side);
-   ctxs[side].drawImage(lesionCanvas[side],0,0);
-   drawOutline(ctxs[side],side);
- });
+ ['front','back'].forEach(side=>{makeMask(side);drawBase(side);ctxs[side].drawImage(lesionCanvas[side],0,0);drawOutline(ctxs[side],side);});
 }
-
 function markMode(){
  document.getElementById('paintBtn').classList.toggle('active',mode==='paint');
  document.getElementById('eraseBtn').classList.toggle('active',mode==='erase');
 }
-
 function addPointer(side){
  const c=canvases[side]; let down=false;
  c.addEventListener('pointerdown',e=>{down=true;c.setPointerCapture(e.pointerId);paint(e,side)});
@@ -247,7 +420,6 @@ function addPointer(side){
  c.addEventListener('pointerup',()=>{down=false;calculate()});
  c.addEventListener('pointercancel',()=>down=false);
 }
-
 function paint(e,side){
  e.preventDefault();
  const c=canvases[side], r=c.getBoundingClientRect();
@@ -255,106 +427,230 @@ function paint(e,side){
  const brush=Number(document.getElementById('brush').value);
  const lctx=lesionCanvas[side].getContext('2d');
  lctx.save();
- if(mode==='erase'){
-   lctx.globalCompositeOperation='destination-out';
-   lctx.fillStyle='rgba(0,0,0,1)';
- }else{
-   lctx.globalCompositeOperation='source-over';
-   lctx.fillStyle=RED;
- }
- lctx.beginPath();
- lctx.arc(x,y,brush,0,Math.PI*2);
- lctx.fill();
- lctx.restore();
- constrain(side);
- drawAll();
- calculate();
+ if(mode==='erase'){lctx.globalCompositeOperation='destination-out';lctx.fillStyle='rgba(0,0,0,1)';}
+ else{lctx.globalCompositeOperation='source-over';lctx.fillStyle=RED;}
+ lctx.beginPath();lctx.arc(x,y,brush,0,Math.PI*2);lctx.fill();lctx.restore();
+ constrain(side); drawAll(); calculate();
 }
-
 function constrain(side){
  const lctx=lesionCanvas[side].getContext('2d'), mctx=maskCanvas[side].getContext('2d');
  const img=lctx.getImageData(0,0,430,700), mask=mctx.getImageData(0,0,430,700);
  for(let i=0;i<img.data.length;i+=4){ if(mask.data[i+3]===0) img.data[i+3]=0; }
  lctx.putImageData(img,0,0);
 }
-
 function regionStats(r){
  const side=r.side;
  const l=lesionCanvas[side].getContext('2d').getImageData(0,0,430,700).data;
  const off=document.createElement('canvas');off.width=430;off.height=700;
- const o=off.getContext('2d');
- o.fillStyle="#000";pathRegion(o,r.id);o.fill();
+ const o=off.getContext('2d'); o.fillStyle="#000";pathRegion(o,r.id);o.fill();
  const md=o.getImageData(0,0,430,700).data;
  let area=0, painted=0;
  for(let i=0;i<md.length;i+=4){ if(md[i+3]>0){area++; if(l[i+3]>0) painted++;}}
  const rate=area?painted/area:0;
  return {rate,bsa:rate*r.weight};
 }
-
 function calculate(){
  let front=0, back=0;
+ let frontHtml='<tr><th>部位</th><th>基準BSA</th><th>塗布率</th><th>BSA</th></tr>';
+ let backHtml='<tr><th>部位</th><th>基準BSA</th><th>塗布率</th><th>BSA</th></tr>';
  regions.forEach(r=>{
    const s=regionStats(r);
-   if(r.side==='front') front+=s.bsa; else back+=s.bsa;
+   const row=`<tr><td>${r.name}</td><td>${r.weight.toFixed(1)}%</td><td>${(s.rate*100).toFixed(1)}%</td><td>${s.bsa.toFixed(2)}%</td></tr>`;
+   if(r.side==='front'){front+=s.bsa;frontHtml+=row;} else {back+=s.bsa;backHtml+=row;}
  });
  const total=front+back;
+ document.getElementById('frontDetail').innerHTML=frontHtml;
+ document.getElementById('backDetail').innerHTML=backHtml;
  document.getElementById('frontBsa').textContent=front.toFixed(2)+' %';
  document.getElementById('backBsa').textContent=back.toFixed(2)+' %';
  document.getElementById('totalBsa').textContent=total.toFixed(2)+' %';
  return {front,back,total};
 }
-
 function resetAll(){
  ['front','back'].forEach(side=>lesionCanvas[side].getContext('2d').clearRect(0,0,430,700));
  drawAll();calculate();
 }
-
 function record(){
  const c=calculate();
- return {
-   timestamp:new Date().toISOString(),
-   date:document.getElementById('date').value,
-   front_bsa:c.front.toFixed(2),
-   back_bsa:c.back.toFixed(2),
-   total_bsa:c.total.toFixed(2),
-   memo:document.getElementById('memo').value
- };
+ const detail={};
+ regions.forEach(r=>{const s=regionStats(r);detail[r.id+'_painted_rate']=(s.rate*100).toFixed(1);detail[r.id+'_bsa']=s.bsa.toFixed(2);});
+ return {timestamp:new Date().toISOString(),date:document.getElementById('date').value,front_bsa:c.front.toFixed(2),back_bsa:c.back.toFixed(2),total_bsa:c.total.toFixed(2),...detail,memo:document.getElementById('memo').value};
 }
-
 function downloadCSV(){
- const r=record();
- const keys=Object.keys(r);
+ const r=record(), keys=Object.keys(r);
  const csv=keys.join(',')+'\n'+keys.map(k=>`"${String(r[k]??'').replaceAll('"','""')}"`).join(',');
  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download=`bsa_${r.date||'date'}.csv`;
- a.click();
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`bsa_${r.date||'date'}.csv`;a.click();
 }
-
 function downloadJSON(){
  const blob=new Blob([JSON.stringify(record(),null,2)],{type:'application/json'});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
- a.download='bsa_record.json';
- a.click();
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bsa_record.json';a.click();
 }
-
 async function sendGoogle(){
- if(!GOOGLE_SCRIPT_URL){
-   alert('GOOGLE_SCRIPT_URLが未設定です。CSVダウンロードを使用してください。');
-   return;
- }
- await fetch(GOOGLE_SCRIPT_URL,{
-   method:'POST',
-   mode:'no-cors',
-   headers:{'Content-Type':'application/json'},
-   body:JSON.stringify(record())
- });
+ if(!GOOGLE_SCRIPT_URL){alert('GOOGLE_SCRIPT_URLが未設定です。CSVダウンロードを使用してください。');return;}
+ await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(record())});
  alert('送信しました。');
 }
-
 setup();
 </script>
 </body>
 </html>
+枝分かれ · BSA計算ツール作成 からのブランチ
+
+
+githubでのコードの書き換え方を再度おしえて
+
+もちろんです。GitHub Pagesで公開しているBSAツールを書き換える手順を、画像なしでも迷わないようにまとめます。
+
+方法① GitHubのWeb画面だけで書き換える（おすすめ）
+① GitHubへログイン
+https://github.com
+
+↓
+
+BSAツールのRepositoryを開く
+
+例
+
+ichthyosis-bsa-tool
+② index.htmlを開く
+Repository内に
+
+index.html
+があります。
+
+クリックします。
+
+③ 編集モードへ
+右上の
+
+✏️（鉛筆マーク）
+
+または
+
+Edit this file
+をクリック
+
+④ コードを全部置き換える
+現在のコードが表示されます。
+
+全部選択
+
+Ctrl + A
+↓
+
+削除
+
+↓
+
+ChatGPTで作成した
+
+bsa_simple_red_tool_detail.html
+のコードを全部貼り付けます。
+
+（途中だけではなく、最初から最後まで全部置き換えるのがおすすめです。）
+
+⑤ Commitする
+画面右上
+
+Commit changes...
+クリック
+
+↓
+
+コメントは
+
+Update BSA tool
+などでOK
+
+↓
+
+もう一度
+
+Commit changes
+⑥ 自動更新
+GitHub Pagesは約30秒〜2分で更新されます。
+
+更新後、
+
+https://あなたのID.github.io/リポジトリ名/
+を開くと新しいツールになります。
+
+更新されない場合
+SafariやChromeはキャッシュを保持していることがあります。
+
+Windows
+Ctrl + F5
+または
+
+Ctrl + Shift + R
+iPad
+Safari
+
+↓
+
+共有
+
+↓
+
+ページを再読み込み
+
+それでも変わらなければ
+
+Safariを完全終了
+
+↓
+
+もう一度開く
+
+GitHub Pagesが有効か確認
+Repository
+
+↓
+
+Settings
+
+↓
+
+Pages
+
+ここで
+
+Source
+
+Deploy from a branch
+になっていることを確認。
+
+さらに
+
+Branch
+
+main
+
+/(root)
+になっていればOKです。
+
+一番おすすめの更新方法
+現在は毎回
+
+index.html
+を全部貼り替えていますが、今後も改良を続けるなら、
+
+index.html
+style.css
+script.js
+の3ファイル構成に分けることをおすすめします。
+
+その方が、例えば
+
+BSA計算ロジックだけ変更
+
+デザインだけ変更
+
+Googleスプレッドシート連携だけ追加
+
+といった修正がとても簡単になります。
+
+研究用途で長く使うなら、この3ファイル構成にリファクタリングしておく価値は十分あります。
+
+
